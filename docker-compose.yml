@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  course-midtier:
+    build:
+      context: .
+      args:
+        SERVICE_PORT: ${SERVICE_PORT}
+    image: wikitolearn/course-midtier
+    environment:
+      KEYCLOAK_URI: ${KEYCLOAK_URI}
+      COURSES_MANAGER_URI: ${COURSES_MANAGER_URI}
+      SERVICE_PORT: ${SERVICE_PORT}
+    ports:
+      - ${SERVICE_PORT}:${SERVICE_PORT}
+    restart: on-failure

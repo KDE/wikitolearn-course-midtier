@@ -1,0 +1,24 @@
+# wikitolearn-course-midtier
+
+## Synopsis
+WikiToLearn Course Midtier is a mid-tier service of the WikiToLearn architecture.
+Its aim is to serve coarse-grained API and hide complex business logic operations which involve multiple microservices.
+
+
+## Development
+We use Docker to speed-up development and setup the environment without any dependency issues.
+
+### Minimum requirements
+- Docker Engine 17.09.0+
+
+### How to run
+It is advisable to run using the `docker-compose.yml` file provided.
+First, you have replace your Docker Host IP into the `.env` file.
+Second, you need to run the following services on which WikiToLearn Course Midtier strongly depends on:
+- Keycloak
+
+## Versioning
+We use [SemVer](http://semver.org/) for versioning.
+
+## License
+This project is licensed under the AGPLv3+. See the [LICENSE.md](LICENSE.md) file for details.

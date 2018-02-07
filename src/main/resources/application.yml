@@ -1,0 +1,28 @@
+security:
+  basic:
+    enabled: false
+  oauth2:
+    client:
+      client-id: wikitolearn
+    resource:
+      resource-id: wikitolearn
+      filter-order: 3
+      user-info-uri: ${KEYCLOAK_URI}/auth/realms/wikitolearn/protocol/openid-connect/userinfo
+      token-info-uri: ${KEYCLOAK_URI}/auth/realms/wikitolearn/protocol/openid-connect/token/introspect
+      prefer-token-info: false
+      jwt:
+        key-uri: ${KEYCLOAK_URI}/auth/realms/wikitolearn
+logging:
+  pattern:
+     file: '%d{"yyyy-MM-dd HH:mm:ss,SSS"} %-5level [%c] \(%thread\) : %msg%n'
+spring:
+  application:
+    name: CourseMidTier
+  output:
+    ansi:
+      enabled: DETECT
+server:
+  port: ${SERVICE_PORT}
+application:
+  clients:
+    courses-manager: ${COURSES_MANAGER_URI}
