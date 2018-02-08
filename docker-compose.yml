@@ -8,7 +8,9 @@ services:
     image: wikitolearn/course-midtier
     environment:
       KEYCLOAK_URI: ${KEYCLOAK_URI}
-      COURSES_MANAGER_URI: ${COURSES_MANAGER_URI}
+      COURSES_BACKEND_URI: ${COURSES_BACKEND_URI}
+      CHAPTERS_BACKEND_URI: ${CHAPTERS_BACKEND_URI}
+      PAGES_BACKEND_URI: ${PAGES_BACKEND_URI}
       SERVICE_PORT: ${SERVICE_PORT}
     ports:
       - ${SERVICE_PORT}:${SERVICE_PORT}

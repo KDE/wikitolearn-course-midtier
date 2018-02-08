@@ -23,6 +23,9 @@ spring:
       enabled: DETECT
 server:
   port: ${SERVICE_PORT}
+  
 application:
   clients:
-    courses-manager: ${COURSES_MANAGER_URI}
+    courses-backend: ${COURSES_BACKEND_URI}
+    chapters-backend: ${CHAPTERS_BACKEND_URI}
+    pages-backend: ${PAGES_BACKEND_URI}
