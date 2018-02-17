@@ -3,9 +3,7 @@ security:
     enabled: false
   oauth2:
     client:
-      client-id: wikitolearn
     resource:
-      resource-id: wikitolearn
       filter-order: 3
       user-info-uri: ${KEYCLOAK_URI}/auth/realms/wikitolearn/protocol/openid-connect/userinfo
       token-info-uri: ${KEYCLOAK_URI}/auth/realms/wikitolearn/protocol/openid-connect/token/introspect
