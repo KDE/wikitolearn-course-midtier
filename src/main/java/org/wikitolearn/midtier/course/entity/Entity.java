@@ -30,7 +30,7 @@ public abstract class Entity {
     private boolean _deleted;
     private String title;
     private String content;
-    private List<Integer> authors;
+    private List<String> authors;
     private String language;
 
 }
