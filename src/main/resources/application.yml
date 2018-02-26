@@ -1,3 +1,12 @@
+# Spring properties
+spring:
+  application:
+    name: CourseMidTier
+  output:
+    ansi:
+      enabled: DETECT
+
+# Security properties
 security:
   basic:
     enabled: false
@@ -10,18 +19,26 @@ security:
       prefer-token-info: false
       jwt:
         key-uri: ${KEYCLOAK_URI}/auth/realms/${KEYCLOAK_AUTH_REALM}
+
+# Logging properties
 logging:
   pattern:
-     file: '%d{"yyyy-MM-dd HH:mm:ss,SSS"} %-5level [%c] \(%thread\) : %msg%n'
-spring:
-  application:
-    name: CourseMidTier
-  output:
-    ansi:
-      enabled: DETECT
+    file: '%d{"yyyy-MM-dd HH:mm:ss,SSS"} %-5level [%c] \(%thread\) : %msg%n'
+    console: '%d{"yyyy-MM-dd HH:mm:ss,SSS"} %-5level [%c] \(%thread\) : %msg%n'
+
+# Server properties
 server:
   port: ${SERVICE_PORT}
+  ssl:
+    enabled: ${SSL_ENABLED}
+    key-store: file:./course-midtier-keystore.jks
+    key-store-password: changeme
+    key-password: changeme
+    trust-store: file:./course-midtier-truststore.jks
+    trust-store-password: changeme
+    client-auth: ${MTLS_STATUS}
 
+# Application properties
 application:
   clients:
     courses-backend: ${COURSES_BACKEND_URI}/v1
