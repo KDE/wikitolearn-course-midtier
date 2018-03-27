@@ -33,7 +33,8 @@ public class ChapterClient {
   private String baseUrl;
 
   public ChapterClient(RestTemplateBuilder restTemplateBuilder) {
-    this.client = restTemplateBuilder.requestFactory(new HttpComponentsClientHttpRequestFactory()).build();
+    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+    this.client = restTemplateBuilder.requestFactory(() -> requestFactory).build();
   }
 
   @HystrixCommand(fallbackMethod = "defaultChapters")

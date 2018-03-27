@@ -42,8 +42,8 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     .and()
       .authorizeRequests()
-      .antMatchers(HttpMethod.GET, "/api/**").permitAll()
-      .antMatchers("/api/**").authenticated();
+      .antMatchers(HttpMethod.GET, "/**").permitAll()
+      .antMatchers("/**").authenticated();
   }
 
   @Override

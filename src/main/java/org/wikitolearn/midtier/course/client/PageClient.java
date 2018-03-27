@@ -1,6 +1,7 @@
 package org.wikitolearn.midtier.course.client;
 
 import java.net.URI;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -32,7 +34,8 @@ public class PageClient {
     private String baseUrl;
 
     public PageClient(RestTemplateBuilder restTemplateBuilder) {
-        this.client = restTemplateBuilder.requestFactory(new HttpComponentsClientHttpRequestFactory()).build();
+      HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+      this.client = restTemplateBuilder.requestFactory(() -> requestFactory).build();
     }
 
     @HystrixCommand(fallbackMethod = "defaultPages")

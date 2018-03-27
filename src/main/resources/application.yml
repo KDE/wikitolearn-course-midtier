@@ -8,12 +8,8 @@ spring:
 
 # Security properties
 security:
-  basic:
-    enabled: false
   oauth2:
-    client:
     resource:
-      filter-order: 3
       user-info-uri: ${KEYCLOAK_URI}/auth/realms/${KEYCLOAK_AUTH_REALM}/protocol/openid-connect/userinfo
       token-info-uri: ${KEYCLOAK_URI}/auth/realms/${KEYCLOAK_AUTH_REALM}/protocol/openid-connect/token/introspect
       prefer-token-info: false
