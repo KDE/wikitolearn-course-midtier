@@ -73,7 +73,7 @@ public class CourseService {
       throw new InvalidResourceCreateException("Invalid course's chapter create request");
     }
     
-    Chapter addedChapter = chapterService.store(chaptersToAdd.get(0));
+    Chapter addedChapter = chapterService.save(chaptersToAdd.get(0));
     
     course.getChapters().stream().forEachOrdered(c -> {
       if(chaptersToAdd.get(0).getTitle().equals(c.getTitle())) {
@@ -86,7 +86,7 @@ public class CourseService {
   
   @EventListener
   public void handleChapterUpdatedEvent(ChapterUpdated event) throws JsonProcessingException {
-    Chapter updatedChapter = event.getChapter();    
+    Chapter updatedChapter = event.getChapter();
     Course course = this.findByChapterId(updatedChapter.getId());
     
     course.getChapters().stream().forEach(c -> {

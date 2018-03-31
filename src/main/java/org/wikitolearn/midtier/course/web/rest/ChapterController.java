@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.midtier.course.entity.Chapter;
+import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.service.ChapterService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,5 +30,19 @@ public class ChapterController {
     chapter.setId(chapterId);
     chapter.setEtag(etag);
     return chapterService.update(chapter);
+  }
+  
+  @PatchMapping(value = "/{chapterId}/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public Chapter updatePages(@PathVariable("chapterId") String chapterId, @RequestBody Chapter chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+    chapter.setId(chapterId);
+    chapter.setEtag(etag);
+    return chapterService.updatePages(chapter);
+  }
+  
+  @PostMapping(value = "/{chapterId}/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public Chapter addPages(@PathVariable("chapterId") String chapterId, @RequestBody Chapter chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+    chapter.setId(chapterId);
+    chapter.setEtag(etag);
+    return chapterService.addPages(chapter);
   }
 }
