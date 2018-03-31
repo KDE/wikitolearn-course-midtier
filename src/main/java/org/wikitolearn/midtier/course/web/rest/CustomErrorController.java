@@ -12,8 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.wikitolearn.midtier.course.entity.ErrorJson;
 
@@ -37,7 +36,7 @@ public class CustomErrorController implements ErrorController {
   }
 
   private Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
-    RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-    return errorAttributes.getErrorAttributes((WebRequest) requestAttributes, includeStackTrace);
+    WebRequest requestAttributes = new ServletWebRequest(request);
+    return errorAttributes.getErrorAttributes(requestAttributes, includeStackTrace);
   }
 }

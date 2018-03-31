@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
+import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.service.ChapterService;
 import org.wikitolearn.midtier.course.service.CourseService;
 import org.wikitolearn.midtier.course.service.PageService;
@@ -100,5 +101,19 @@ public class CourseController {
     course.setId(courseId);
     course.setEtag(etag);
     return courseService.update(course);
+  }
+  
+  @PatchMapping(value = "/{courseId}/chapters", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public Course updateChapters(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+    course.setId(courseId);
+    course.setEtag(etag);
+    return courseService.updateChapters(course);
+  }
+  
+  @PostMapping(value = "/{courseId}/chapters", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public Course addChapters(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+    course.setId(courseId);
+    course.setEtag(etag);
+    return courseService.addChapters(course);
   }
 }

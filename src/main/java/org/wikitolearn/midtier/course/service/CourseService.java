@@ -1,5 +1,9 @@
 package org.wikitolearn.midtier.course.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -9,6 +13,8 @@ import org.wikitolearn.midtier.course.entity.Chapter;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
 import org.wikitolearn.midtier.course.event.ChapterUpdated;
+import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
+import org.wikitolearn.midtier.course.exception.InvalidResourceUpdateException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -45,6 +51,37 @@ public class CourseService {
   
   public Course update(Course course) throws JsonProcessingException {
     return courseClient.update(course);
+  }
+  
+  public Course updateChapters(Course course) throws JsonProcessingException, InvalidResourceCreateException {
+    List<Chapter> currentChapters = this.find(course.getId(), null).getChapters();
+    
+    if(currentChapters.size() == course.getChapters().size() && currentChapters.containsAll(course.getChapters())) {
+      return courseClient.update(course);
+    } else {
+      log.warn("Invalid course's chapters update request");
+      throw new InvalidResourceUpdateException("Invalid course's chapters update request");
+    }
+  }
+  
+  public Course addChapters(Course course) throws JsonProcessingException, InvalidResourceCreateException {
+    List<Chapter> currentChapters = this.find(course.getId(), null).getChapters();
+    List<Chapter> chaptersToAdd = new ArrayList<>(CollectionUtils.disjunction(course.getChapters(), currentChapters));
+    
+    if(chaptersToAdd.size() != 1) {
+      log.warn("Invalid course's chapter create request");
+      throw new InvalidResourceCreateException("Invalid course's chapter create request");
+    }
+    
+    Chapter addedChapter = chapterService.store(chaptersToAdd.get(0));
+    
+    course.getChapters().stream().forEachOrdered(c -> {
+      if(chaptersToAdd.get(0).getTitle().equals(c.getTitle())) {
+        c.setVersion(addedChapter.getLatestVersion());
+        c.setId(addedChapter.getId());
+      }
+    });
+    return this.update(course);
   }
   
   @EventListener
