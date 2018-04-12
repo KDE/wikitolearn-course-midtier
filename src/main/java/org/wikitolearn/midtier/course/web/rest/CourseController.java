@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -101,6 +102,14 @@ public class CourseController {
     course.setId(courseId);
     course.setEtag(etag);
     return courseService.update(course);
+  }
+  
+  @DeleteMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public Course deleteCourse(@PathVariable("courseId") String courseId, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
+    Course course = new Course();
+    course.setId(courseId);
+    course.setEtag(etag);
+    return courseService.delete(course);
   }
   
   @PatchMapping(value = "/{courseId}/chapters", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

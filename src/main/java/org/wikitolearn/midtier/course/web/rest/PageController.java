@@ -2,6 +2,7 @@ package org.wikitolearn.midtier.course.web.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,5 +35,13 @@ public class PageController {
     page.setId(pageId);
     page.setEtag(etag);
     return pageService.update(page);
+  }
+  
+  @DeleteMapping(value = "/{pageId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public Page update(@PathVariable("pageId") String pageId, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
+    Page page = new Page();
+    page.setId(pageId);
+    page.setEtag(etag);
+    return pageService.delete(page, false);
   }
 }

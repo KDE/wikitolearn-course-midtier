@@ -9,6 +9,7 @@ import org.springframework.util.MultiValueMap;
 import org.wikitolearn.midtier.course.client.PageClient;
 import org.wikitolearn.midtier.course.entity.EntityList;
 import org.wikitolearn.midtier.course.entity.Page;
+import org.wikitolearn.midtier.course.event.PageDeleted;
 import org.wikitolearn.midtier.course.event.PageUpdated;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,5 +55,13 @@ public class PageService {
     Page updatedPage = pageClient.update(page);
     applicationEventPublisher.publishEvent(new PageUpdated(this, updatedPage));
     return updatedPage;
+  }
+  
+  public Page delete(Page page, boolean isBulkDelete) throws JsonProcessingException {
+    Page deletedPage = pageClient.delete(page);
+    if(!isBulkDelete) {
+      applicationEventPublisher.publishEvent(new PageDeleted(this, page));
+    }
+    return deletedPage;
   }
 }

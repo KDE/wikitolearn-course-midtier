@@ -93,6 +93,20 @@ public class ChapterClient {
     HttpEntity <String> httpEntity = new HttpEntity <String> (chapter.toSchemaCompliant(), headers);
     return client.patchForObject(uri, httpEntity, Chapter.class);
   }
+  
+  public Chapter delete(Chapter chapter) throws JsonProcessingException {
+    URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/chapters/" + chapter.getId())
+        .build()
+        .encode()
+        .toUri();
+    
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setIfMatch(chapter.getEtag());
+    
+    HttpEntity<String> httpEntity = new HttpEntity<String>(headers);
+    return client.exchange(uri, HttpMethod.DELETE, httpEntity, Chapter.class).getBody();
+  }
 
   private String defaultChapters() {
     return "Hello default!";

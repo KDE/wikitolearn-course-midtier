@@ -2,6 +2,8 @@ package org.wikitolearn.midtier.course.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.wikitolearn.midtier.course.client.CourseClient;
 import org.wikitolearn.midtier.course.entity.Chapter;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
+import org.wikitolearn.midtier.course.event.ChapterDeleted;
 import org.wikitolearn.midtier.course.event.ChapterUpdated;
 import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.exception.InvalidResourceUpdateException;
@@ -51,6 +54,20 @@ public class CourseService {
   
   public Course update(Course course) throws JsonProcessingException {
     return courseClient.update(course);
+  }
+  
+  public Course delete(Course course) throws JsonProcessingException {
+    course = this.find(course.getId(), null);
+    course.getChapters().stream().forEachOrdered(c -> {
+      try {
+        this.chapterService.delete(c, true);
+      } catch (JsonProcessingException e) {
+        // FIXME
+        log.error(e.getMessage());
+      }
+    });
+    
+    return courseClient.delete(course);
   }
   
   public Course updateChapters(Course course) throws JsonProcessingException, InvalidResourceCreateException {
@@ -96,6 +113,25 @@ public class CourseService {
     });
     
     this.update(course);
+  }
+  
+  @EventListener
+  public void handleChapterDeletedEvent(ChapterDeleted event) throws JsonProcessingException {
+    Chapter deletedChapter = event.getChapter();
+    Course course = this.findByChapterId(deletedChapter.getId());
+    
+    List<Chapter> chapters = course.getChapters()
+        .stream()
+        .sequential()
+        .filter(removeDeletedChapter(deletedChapter.getId()))
+        .collect(Collectors.<Chapter>toList());
+    course.setChapters(chapters);
+    
+    this.update(course);
+  }
+  
+  private static Predicate<Chapter> removeDeletedChapter(String deletedChapterId) {
+    return c -> !deletedChapterId.equals(c.getId());
   }
 
 }
