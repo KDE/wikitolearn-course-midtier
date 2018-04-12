@@ -1,0 +1,36 @@
+# Spring properties
+spring:
+  application:
+    name: CourseMidTier
+  output:
+    ansi:
+      enabled: DETECT
+
+# Security properties
+security:
+  enabled: false
+
+# Logging properties
+logging:
+  pattern:
+    file: '%d{"yyyy-MM-dd HH:mm:ss,SSS"} %-5level [%c] \(%thread\) : %msg%n'
+    console: '%d{"yyyy-MM-dd HH:mm:ss,SSS"} %-5level [%c] \(%thread\) : %msg%n'
+
+# Server properties
+server:
+  port: 8080
+  ssl:
+    enabled: false
+    key-store: classpath:app-keystore.jks
+    key-store-password: changeme
+    key-password: changeme
+    trust-store: classpath:app-truststore.jks
+    trust-store-password: changeme
+    client-auth: need
+
+# Application properties
+application:
+  clients:
+    courses-backend: http://localhost:10000/v1
+    chapters-backend: http://localhost:10001/v1
+    pages-backend: http://localhost:10002/v1
