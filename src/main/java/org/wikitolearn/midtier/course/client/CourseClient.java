@@ -38,12 +38,13 @@ public class CourseClient {
   }
 
   @HystrixCommand(fallbackMethod = "defaultCourses")
-  public EntityList<Course> findAll() {
+  public EntityList<Course> findAll(MultiValueMap<String, String> params) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses")
+        .queryParams(params)
         .build()
         .encode()
         .toUri();
-    
+
     return client
         .exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<EntityList<Course>>() {
         }).getBody();
@@ -55,10 +56,10 @@ public class CourseClient {
         .build()
         .encode()
         .toUri();
-    
+
     return client.getForObject(uri, Course.class);
   }
-  
+
   public EntityList<Course> findByChapterId(String chapterId) {
     MultiValueMap<String, String> query = new LinkedMultiValueMap<>();
     query.add("where", "{\"chapters._id\":\"" + chapterId + "\"}");
@@ -67,49 +68,49 @@ public class CourseClient {
         .build()
         .encode()
         .toUri();
-    
+
     return client
         .exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<EntityList<Course>>() {
         }).getBody();
   }
-  
+
   public Course save(Course course) throws JsonProcessingException {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses")
         .build()
         .encode()
         .toUri();
-    
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-    
+
     HttpEntity <String> httpEntity = new HttpEntity <String> (course.toSchemaCompliant(), headers);
     return client.postForObject(uri, httpEntity, Course.class);
   }
-  
+
   public Course update(Course course) throws JsonProcessingException {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses/" + course.getId())
         .build()
         .encode()
         .toUri();
-    
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setIfMatch(course.getEtag());
-    
+
     HttpEntity <String> httpEntity = new HttpEntity <String> (course.toSchemaCompliant(), headers);
     return client.patchForObject(uri, httpEntity, Course.class);
   }
-  
+
   public Course delete(Course course) throws JsonProcessingException {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses/" + course.getId())
         .build()
         .encode()
         .toUri();
-    
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setIfMatch(course.getEtag());
-    
+
     HttpEntity<String> httpEntity = new HttpEntity<String>(headers);
     return client.exchange(uri, HttpMethod.DELETE, httpEntity, Course.class).getBody();
   }

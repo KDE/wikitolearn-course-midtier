@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
@@ -45,11 +46,15 @@ public class CourseController {
   private PageService pageService;
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public EntityList<Course> getCourses() {
+  public EntityList<Course> getCourses(@RequestParam(value="page", required=false) String page) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("projection", "{\"title\":1}");
+    params.add("page", page);
 
-    EntityList<Course> courses = courseService.findAll();
+    EntityList<Course> courses = courseService.findAll(params);
+    
+    params.clear();
+    params.add("projection", "{\"title\":1}");
+    
     courses.getItems().forEach(course -> {
       course.setChapters(
           Optional
@@ -66,7 +71,7 @@ public class CourseController {
   public Course getCourse(@PathVariable String courseId) {
     MultiValueMap<String, String> chapterParams = new LinkedMultiValueMap<>();
     chapterParams.add("projection", "{\"title\":1, \"pages\":1}");
-    
+
     MultiValueMap<String, String> pagesParams = new LinkedMultiValueMap<>();
     pagesParams.add("projection", "{\"title\":1}");
 
@@ -90,20 +95,20 @@ public class CourseController {
         .collect(Collectors.toList()));
     return course;
   }
-  
+
   @PostMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<Course> storeCourse(@RequestBody Course course) throws JsonProcessingException {
     ResponseEntity<Course> response = new ResponseEntity<>(courseService.save(course), HttpStatus.CREATED);
     return response;
   }
-  
+
   @PatchMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Course updateCourse(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
     course.setId(courseId);
     course.setEtag(etag);
     return courseService.update(course);
   }
-  
+
   @DeleteMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Course deleteCourse(@PathVariable("courseId") String courseId, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
     Course course = new Course();
@@ -111,14 +116,14 @@ public class CourseController {
     course.setEtag(etag);
     return courseService.delete(course);
   }
-  
+
   @PatchMapping(value = "/{courseId}/chapters", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Course updateChapters(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
     course.setId(courseId);
     course.setEtag(etag);
     return courseService.updateChapters(course);
   }
-  
+
   @PostMapping(value = "/{courseId}/chapters", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Course addChapters(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
     course.setId(courseId);

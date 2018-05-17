@@ -32,30 +32,30 @@ public class CourseService {
   @Autowired
   private ChapterService chapterService;
 
-  public EntityList<Course> findAll() {
-    return courseClient.findAll();
+  public EntityList<Course> findAll(MultiValueMap<String, String> params) {
+    return courseClient.findAll(params);
   }
 
   public Course find(String courseId, MultiValueMap<String, String> params) {
     return courseClient.find(courseId, params);
   }
-  
+
   public Course findByChapterId(String chapterId) {
     EntityList<Course> courses = courseClient.findByChapterId(chapterId);
     return courses.getItems().get(0);
   }
-  
+
   public Course save(Course course) throws JsonProcessingException {
     if(course.getChapters()!= null && !course.getChapters().isEmpty()) {
       course.setChapters(chapterService.save(course.getChapters()));
     }
     return courseClient.save(course);
   }
-  
+
   public Course update(Course course) throws JsonProcessingException {
     return courseClient.update(course);
   }
-  
+
   public Course delete(Course course) throws JsonProcessingException {
     course = this.find(course.getId(), null);
     course.getChapters().stream().forEachOrdered(c -> {
@@ -66,13 +66,13 @@ public class CourseService {
         log.error(e.getMessage());
       }
     });
-    
+
     return courseClient.delete(course);
   }
-  
+
   public Course updateChapters(Course course) throws JsonProcessingException, InvalidResourceCreateException {
     List<Chapter> currentChapters = this.find(course.getId(), null).getChapters();
-    
+
     if(currentChapters.size() == course.getChapters().size() && currentChapters.containsAll(course.getChapters())) {
       return courseClient.update(course);
     } else {
@@ -80,18 +80,18 @@ public class CourseService {
       throw new InvalidResourceUpdateException("Invalid course's chapters update request");
     }
   }
-  
+
   public Course addChapters(Course course) throws JsonProcessingException, InvalidResourceCreateException {
     List<Chapter> currentChapters = this.find(course.getId(), null).getChapters();
     List<Chapter> chaptersToAdd = new ArrayList<>(CollectionUtils.disjunction(course.getChapters(), currentChapters));
-    
+
     if(chaptersToAdd.size() != 1) {
       log.warn("Invalid course's chapter create request");
       throw new InvalidResourceCreateException("Invalid course's chapter create request");
     }
-    
+
     Chapter addedChapter = chapterService.save(chaptersToAdd.get(0));
-    
+
     course.getChapters().stream().forEachOrdered(c -> {
       if(chaptersToAdd.get(0).getTitle().equals(c.getTitle())) {
         c.setVersion(addedChapter.getLatestVersion());
@@ -100,36 +100,36 @@ public class CourseService {
     });
     return this.update(course);
   }
-  
+
   @EventListener
   public void handleChapterUpdatedEvent(ChapterUpdated event) throws JsonProcessingException {
     Chapter updatedChapter = event.getChapter();
     Course course = this.findByChapterId(updatedChapter.getId());
-    
+
     course.getChapters().stream().forEach(c -> {
       if(c.getId().equals(updatedChapter.getId())) {
         c.setVersion(updatedChapter.getLatestVersion());
       }
     });
-    
+
     this.update(course);
   }
-  
+
   @EventListener
   public void handleChapterDeletedEvent(ChapterDeleted event) throws JsonProcessingException {
     Chapter deletedChapter = event.getChapter();
     Course course = this.findByChapterId(deletedChapter.getId());
-    
+
     List<Chapter> chapters = course.getChapters()
         .stream()
         .sequential()
         .filter(removeDeletedChapter(deletedChapter.getId()))
         .collect(Collectors.<Chapter>toList());
     course.setChapters(chapters);
-    
+
     this.update(course);
   }
-  
+
   private static Predicate<Chapter> removeDeletedChapter(String deletedChapterId) {
     return c -> !deletedChapterId.equals(c.getId());
   }
