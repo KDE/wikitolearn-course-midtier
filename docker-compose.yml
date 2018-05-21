@@ -5,7 +5,7 @@ services:
       context: .
       args:
         SERVICE_PORT: ${SERVICE_PORT}
-    image: "${DOCKER_REGISTRY}wikitolearn/course-midtier"
+    image: "${DOCKER_REGISTRY}wikitolearn/course-midtier:${DOCKER_IMAGE_COURSE_MIDTIER_TAG}"
     environment:
       KEYCLOAK_URI: ${KEYCLOAK_URI}
       KEYCLOAK_AUTH_REALM: ${KEYCLOAK_AUTH_REALM}
