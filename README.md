@@ -17,6 +17,13 @@ First, you have replace your Docker Host IP into the `.env` file.
 Second, you need to run the following services on which WikiToLearn Course Midtier strongly depends on:
 - Keycloak
 
+### API documentation
+The API documentation is generated thanks to [Springfox](https://springfox.github.io/springfox/).
+A Swagger2 compliant JSON and Swagger UI is available at `/api-docs` and at `/swagger-ui.html` respectively.
+
+> N.B.: Do not use the "Try it out" Swagger UI option, it will be removed as soon as possible.
+> Moreover, model definition for requests do not match the expected ones yet.
+
 ## Versioning
 We use [SemVer](http://semver.org/) for versioning.
 
