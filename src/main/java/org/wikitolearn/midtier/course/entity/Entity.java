@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,32 +24,36 @@ public abstract class Entity {
     @JsonProperty("_id")
     private String id;
     
+    @ApiModelProperty( readOnly = true )
     @JsonProperty("_etag")
     private String etag;
     
     @JsonProperty("_version")
     private int version;
     
+    @ApiModelProperty( readOnly = true )
     @JsonProperty("_latest_version")
     private int latestVersion;
     
+    @ApiModelProperty( readOnly = true )
     @JsonFormat
     (shape = JsonFormat.Shape.STRING, pattern = "EEE, dd MMM yyyy HH:mm:ss z")
     @JsonProperty("_updated")
     private Date updated;
     
+    @ApiModelProperty( readOnly = true )
     @JsonFormat
     (shape = JsonFormat.Shape.STRING, pattern = "EEE, dd MMM yyyy HH:mm:ss z")
     @JsonProperty("_created")
     private Date created;
     
+    @ApiModelProperty( readOnly = true )
     @JsonProperty("_deleted")
     private boolean deleted;
     
     private String title;
     
-    private String content;
-    
+    @ApiModelProperty( readOnly = true )
     private List<String> authors;
     
     private String language;

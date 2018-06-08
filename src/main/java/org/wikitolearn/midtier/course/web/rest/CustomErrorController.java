@@ -16,7 +16,10 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.wikitolearn.midtier.course.entity.ErrorJson;
 
+import springfox.documentation.annotations.ApiIgnore;
+
 @RestController
+@ApiIgnore
 public class CustomErrorController implements ErrorController {
 
   private static final String PATH = "/error";

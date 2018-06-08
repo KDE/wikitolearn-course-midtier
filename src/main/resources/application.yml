@@ -15,6 +15,13 @@ security:
       prefer-token-info: false
       jwt:
         key-uri: ${KEYCLOAK_URI}/auth/realms/${KEYCLOAK_AUTH_REALM}
+        
+# Springfox properties    
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
 
 # Logging properties
 logging:
