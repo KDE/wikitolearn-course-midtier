@@ -72,7 +72,6 @@ public class ChapterService {
     if(chapter.getPages() != null && !chapter.getPages().isEmpty()) {
       chapter.setPages(pageService.save(chapter.getPages()));
     }
-    chapter.setLanguage("it");
     return chapterClient.store(chapter);
   }
   
