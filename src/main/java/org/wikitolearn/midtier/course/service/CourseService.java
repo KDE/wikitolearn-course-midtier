@@ -44,6 +44,10 @@ public class CourseService {
     EntityList<Course> courses = courseClient.findByChapterId(chapterId);
     return courses.getItems().get(0);
   }
+  
+  public EntityList<Course> getAllCourseVersions(String courseId, MultiValueMap<String, String> params) {
+    return courseClient.getAllCourseVersions(courseId, params);
+  }
 
   public Course save(Course course) throws JsonProcessingException {
     if(course.getChapters()!= null && !course.getChapters().isEmpty()) {

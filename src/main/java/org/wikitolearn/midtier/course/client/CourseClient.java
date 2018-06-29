@@ -73,6 +73,18 @@ public class CourseClient {
         .exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<EntityList<Course>>() {
         }).getBody();
   }
+  
+  public EntityList<Course> getAllCourseVersions(String courseId, MultiValueMap<String, String> params) {
+    URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses/" + courseId)
+        .queryParams(params)
+        .build()
+        .encode()
+        .toUri();
+
+    return client
+        .exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<EntityList<Course>>() {
+        }).getBody();
+  }
 
   public Course save(Course course) throws JsonProcessingException {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses")
