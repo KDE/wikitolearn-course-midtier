@@ -95,13 +95,17 @@ public class CourseService {
     }
 
     Chapter addedChapter = chapterService.save(chaptersToAdd.get(0));
-
-    course.getChapters().stream().forEachOrdered(c -> {
-      if(chaptersToAdd.get(0).getTitle().equals(c.getTitle())) {
+    
+    course.getChapters()
+      .parallelStream()
+      .filter(c -> chaptersToAdd.get(0).getTitle().equals(c.getTitle()))
+      .findFirst()
+      .map(c -> {
         c.setVersion(addedChapter.getLatestVersion());
         c.setId(addedChapter.getId());
-      }
-    });
+        return c;
+      });
+    
     return this.update(course);
   }
 

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
+import org.wikitolearn.midtier.course.entity.dto.AddCourseChaptersDto;
+import org.wikitolearn.midtier.course.entity.dto.GetCourseDto;
+import org.wikitolearn.midtier.course.entity.dto.GetCoursesDto;
+import org.wikitolearn.midtier.course.entity.dto.UpdateCourseChaptersDto;
+import org.wikitolearn.midtier.course.entity.dto.UpdateCourseDto;
+import org.wikitolearn.midtier.course.entity.dto.UpdatedCourseDto;
 import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.service.ChapterService;
 import org.wikitolearn.midtier.course.service.CourseService;
@@ -35,6 +42,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping(value = "/courses")
 public class CourseController {
+  
+  @Autowired
+  private ModelMapper modelMapper;
 
   @Autowired
   private CourseService courseService;
@@ -46,29 +56,17 @@ public class CourseController {
   private PageService pageService;
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public EntityList<Course> getCourses(@RequestParam(value="page", required=false) String page) {
+  public GetCoursesDto getCourses(@RequestParam(value="page", required=false) String page) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("page", page);
-
+    
     EntityList<Course> courses = courseService.findAll(params);
     
-    params.clear();
-    params.add("projection", "{\"title\":1}");
-    
-    courses.getItems().forEach(course -> {
-      course.setChapters(
-          Optional
-          .ofNullable(course.getChapters())
-          .orElseGet(Collections::emptyList)
-          .parallelStream()
-          .map(chapter -> chapterService.find(chapter.getId(), params))
-          .collect(Collectors.toList()));
-    });
-    return courses;
+    return modelMapper.map(courses, GetCoursesDto.class);
   }
 
   @GetMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public Course getCourse(@PathVariable String courseId) {
+  public GetCourseDto getCourse(@PathVariable String courseId) {
     MultiValueMap<String, String> chapterParams = new LinkedMultiValueMap<>();
     chapterParams.add("projection", "{\"title\":1, \"pages\":1}");
 
@@ -93,7 +91,7 @@ public class CourseController {
           return chapter;
         })
         .collect(Collectors.toList()));
-    return course;
+    return modelMapper.map(course, GetCourseDto.class);
   }
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -103,10 +101,13 @@ public class CourseController {
   }
 
   @PatchMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public Course updateCourse(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
-    course.setId(courseId);
-    course.setEtag(etag);
-    return courseService.update(course);
+  public UpdatedCourseDto updateCourse(@PathVariable("courseId") String courseId, @RequestBody UpdateCourseDto course, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
+    Course courseToUpdate = modelMapper.map(course, Course.class);
+    courseToUpdate.setId(courseId);
+    courseToUpdate.setEtag(etag);
+    
+    Course updatedCourse = courseService.update(courseToUpdate);
+    return modelMapper.map(updatedCourse, UpdatedCourseDto.class);
   }
 
   @DeleteMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -114,20 +115,27 @@ public class CourseController {
     Course course = new Course();
     course.setId(courseId);
     course.setEtag(etag);
+    
     return courseService.delete(course);
   }
 
   @PatchMapping(value = "/{courseId}/chapters", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public Course updateChapters(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
-    course.setId(courseId);
-    course.setEtag(etag);
-    return courseService.updateChapters(course);
+  public UpdatedCourseDto updateChapters(@PathVariable("courseId") String courseId, @RequestBody UpdateCourseChaptersDto course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+    Course courseToUpdate = modelMapper.map(course, Course.class);
+    courseToUpdate.setId(courseId);
+    courseToUpdate.setEtag(etag);
+    
+    Course updatedCourse = courseService.updateChapters(courseToUpdate);
+    return modelMapper.map(updatedCourse, UpdatedCourseDto.class); 
   }
 
   @PostMapping(value = "/{courseId}/chapters", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public Course addChapters(@PathVariable("courseId") String courseId, @RequestBody Course course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
-    course.setId(courseId);
-    course.setEtag(etag);
-    return courseService.addChapters(course);
+  public UpdatedCourseDto addChapters(@PathVariable("courseId") String courseId, @RequestBody AddCourseChaptersDto course, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+    Course courseToUpdate = modelMapper.map(course, Course.class);
+    courseToUpdate.setId(courseId);
+    courseToUpdate.setEtag(etag);
+    
+    Course updatedCourse = courseService.addChapters(courseToUpdate);
+    return modelMapper.map(updatedCourse, UpdatedCourseDto.class);
   }
 }

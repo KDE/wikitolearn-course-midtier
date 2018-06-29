@@ -2,6 +2,8 @@ package org.wikitolearn.midtier.course.client;
 
 import java.net.URI;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -17,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
+import org.wikitolearn.midtier.course.entity.dto.UpdateCourseClientDto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -28,6 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 public class CourseClient {
 
   private final RestTemplate client;
+  
+  @Autowired
+  private ModelMapper modelMapper;
 
   @Value("${application.clients.courses-backend}")
   private String baseUrl;
@@ -109,7 +115,7 @@ public class CourseClient {
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setIfMatch(course.getEtag());
 
-    HttpEntity <String> httpEntity = new HttpEntity <String> (course.toSchemaCompliant(), headers);
+    HttpEntity <UpdateCourseClientDto> httpEntity = new HttpEntity <UpdateCourseClientDto> (modelMapper.map(course, UpdateCourseClientDto.class), headers);
     return client.patchForObject(uri, httpEntity, Course.class);
   }
 
