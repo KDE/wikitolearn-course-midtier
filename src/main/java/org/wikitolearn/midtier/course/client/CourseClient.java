@@ -22,6 +22,8 @@ import org.wikitolearn.midtier.course.entity.EntityList;
 import org.wikitolearn.midtier.course.entity.dto.UpdateCourseClientDto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,9 @@ public class CourseClient {
 
   @Value("${application.clients.courses-backend}")
   private String baseUrl;
+  
+  @Autowired
+  private ObjectMapper objectMapper;
 
   public CourseClient(RestTemplateBuilder restTemplateBuilder) {
     HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
@@ -66,9 +71,10 @@ public class CourseClient {
     return client.getForObject(uri, Course.class);
   }
 
-  public EntityList<Course> findByChapterId(String chapterId) {
+  public EntityList<Course> findByChapterId(String chapterId) throws JsonProcessingException {
     MultiValueMap<String, String> query = new LinkedMultiValueMap<>();
-    query.add("where", "{\"chapters._id\":\"" + chapterId + "\"}");
+    ObjectNode whereJsonObject = objectMapper.getNodeFactory().objectNode().put("chapters._id", chapterId);
+    query.add("where", objectMapper.writeValueAsString(whereJsonObject));
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses")
         .queryParams(query)
         .build()

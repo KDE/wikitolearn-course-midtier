@@ -22,6 +22,10 @@ import org.wikitolearn.midtier.course.service.ChapterService;
 import org.wikitolearn.midtier.course.service.CourseService;
 import org.wikitolearn.midtier.course.service.PageService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,19 +43,24 @@ public class HistoryController {
   @Autowired
   private PageService pageService;
   
+  @Autowired
+  private ObjectMapper objectMapper;
+  
   @ApiOperation(value = "getCourseVersion")
   @GetMapping(value = "/{courseId}/versions/{version}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Course getCourseVersion(@PathVariable(value = "courseId", required = true) String courseId,
-      @PathVariable(value = "version", required = true) String version) {
+      @PathVariable(value = "version", required = true) Integer version) throws JsonProcessingException {
     MultiValueMap<String, String> courseParams = new LinkedMultiValueMap<>();
-    courseParams.add("version", version);
+    courseParams.add("version", String.valueOf(version));
 
     MultiValueMap<String, String> chapterParams = new LinkedMultiValueMap<>();
-    chapterParams.add("projection", "{\"title\":1, \"pages\":1}");
+    ObjectNode projectionJsonObject = objectMapper.getNodeFactory().objectNode().put("title", 1).put("pages", 1);
+    chapterParams.add("projection", objectMapper.writeValueAsString(projectionJsonObject));
     chapterParams.add("version", "");
 
     MultiValueMap<String, String> pagesParams = new LinkedMultiValueMap<>();
-    pagesParams.add("projection", "{\"title\":1}");
+    projectionJsonObject = objectMapper.getNodeFactory().objectNode().put("title", 1);
+    pagesParams.add("projection", objectMapper.writeValueAsString(projectionJsonObject));
     pagesParams.add("version", "");
 
     Course course = courseService.find(courseId, courseParams);
@@ -81,9 +90,9 @@ public class HistoryController {
   
   @GetMapping(value = "/{courseId}/versions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public EntityList<Course> getCourseVersions(@PathVariable(value = "courseId", required = true) String courseId,
-      @RequestParam(value="page", required=false) String page) {
+      @RequestParam(value="page", required=false) Integer page) {
     MultiValueMap<String, String> courseParams = new LinkedMultiValueMap<>();
-    courseParams.add("page", page);
+    courseParams.add("page", String.valueOf(page));
     courseParams.add("version", "all");
 
     EntityList<Course> courseVersions = courseService.getAllCourseVersions(courseId, courseParams);
@@ -92,14 +101,15 @@ public class HistoryController {
   
   @GetMapping(value = "/{courseId}/versions/{version}", params = "pageId", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Page getPage(@PathVariable(value = "courseId", required = true) String courseId,
-      @PathVariable(value = "version", required = true) String version,
-      @RequestParam(value = "pageId", required = true) String pageId) {
+      @PathVariable(value = "version", required = true) Integer version,
+      @RequestParam(value = "pageId", required = true) String pageId) throws JsonProcessingException {
 
     MultiValueMap<String, String> courseParams = new LinkedMultiValueMap<>();
-    courseParams.add("version", version);
+    courseParams.add("version", String.valueOf(version));
 
     MultiValueMap<String, String> chapterParams = new LinkedMultiValueMap<>();
-    chapterParams.add("projection", "{\"title\":1, \"pages\":1}");
+    ObjectNode projectionJsonObject = objectMapper.getNodeFactory().objectNode().put("title", 1).put("pages", 1);
+    chapterParams.add("projection", objectMapper.writeValueAsString(projectionJsonObject));
     chapterParams.add("version", "");
 
     MultiValueMap<String, String> pageParams = new LinkedMultiValueMap<>();

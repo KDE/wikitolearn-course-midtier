@@ -2,6 +2,7 @@ package org.wikitolearn.midtier.course.client;
 
 import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,6 +20,8 @@ import org.wikitolearn.midtier.course.entity.Chapter;
 import org.wikitolearn.midtier.course.entity.EntityList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,9 @@ public class ChapterClient {
 
   @Value("${application.clients.chapters-backend}")
   private String baseUrl;
+  
+  @Autowired
+  private ObjectMapper objectMapper;
 
   public ChapterClient(RestTemplateBuilder restTemplateBuilder) {
     HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
@@ -54,9 +60,11 @@ public class ChapterClient {
     return client.getForObject(uri, Chapter.class);
   }
   
-  public EntityList<Chapter> findByPageId(String pageId) {
+  public EntityList<Chapter> findByPageId(String pageId) throws JsonProcessingException {
     MultiValueMap<String, String> query = new LinkedMultiValueMap<>();
-    query.add("where", "{\"pages._id\":\"" + pageId + "\"}");
+    ObjectNode whereJsonObject = objectMapper.getNodeFactory().objectNode().put("pages._id", pageId);
+    query.add("where", objectMapper.writeValueAsString(whereJsonObject));
+    
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/chapters")
         .queryParams(query)
         .build()

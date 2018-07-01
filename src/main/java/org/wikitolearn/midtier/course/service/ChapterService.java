@@ -63,7 +63,7 @@ public class ChapterService {
     return chapters;
   }
   
-  public Chapter findByPageId(String pageId) {
+  public Chapter findByPageId(String pageId) throws JsonProcessingException {
     EntityList<Chapter> chapters = chapterClient.findByPageId(pageId);
     return chapters.getItems().get(0);
   }

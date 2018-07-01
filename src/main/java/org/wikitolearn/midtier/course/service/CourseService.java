@@ -40,7 +40,7 @@ public class CourseService {
     return courseClient.find(courseId, params);
   }
 
-  public Course findByChapterId(String chapterId) {
+  public Course findByChapterId(String chapterId) throws JsonProcessingException {
     EntityList<Course> courses = courseClient.findByChapterId(chapterId);
     return courses.getItems().get(0);
   }

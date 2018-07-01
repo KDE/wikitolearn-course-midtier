@@ -35,6 +35,8 @@ import org.wikitolearn.midtier.course.service.CourseService;
 import org.wikitolearn.midtier.course.service.PageService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,11 +56,14 @@ public class CourseController {
 
   @Autowired
   private PageService pageService;
+  
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public GetCoursesDto getCourses(@RequestParam(value="page", required=false) String page) {
+  public GetCoursesDto getCourses(@RequestParam(value="page", required=false) Integer page) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("page", page);
+    params.add("page", String.valueOf(page));
     
     EntityList<Course> courses = courseService.findAll(params);
     
@@ -66,12 +71,14 @@ public class CourseController {
   }
 
   @GetMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public GetCourseDto getCourse(@PathVariable String courseId) {
+  public GetCourseDto getCourse(@PathVariable String courseId) throws JsonProcessingException {
     MultiValueMap<String, String> chapterParams = new LinkedMultiValueMap<>();
-    chapterParams.add("projection", "{\"title\":1, \"pages\":1}");
+    ObjectNode projectionJsonObject = objectMapper.getNodeFactory().objectNode().put("title", 1).put("pages", 1);
+    chapterParams.add("projection", objectMapper.writeValueAsString(projectionJsonObject));
 
     MultiValueMap<String, String> pagesParams = new LinkedMultiValueMap<>();
-    pagesParams.add("projection", "{\"title\":1}");
+    projectionJsonObject = objectMapper.getNodeFactory().objectNode().put("title", 1);
+    pagesParams.add("projection", objectMapper.writeValueAsString(projectionJsonObject));
 
     Course course = courseService.find(courseId, null);
     course.setChapters(
