@@ -1,4 +1,4 @@
-package org.wikitolearn.midtier.course.entity.dto;
+package org.wikitolearn.midtier.course.entity.dto.in;
 
 import java.util.Date;
 import java.util.List;
@@ -10,8 +10,8 @@ import org.wikitolearn.midtier.course.entity.Meta;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,9 +20,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
-public class GetCoursesDto {
+public class GetCourseVersionsDto {
   @JsonProperty("_items")
-  List<CourseInListDto> items;
+  List<CourseVersionInListDto> items;
 
   @JsonProperty("_meta")
   Meta meta;
@@ -34,7 +34,7 @@ public class GetCoursesDto {
   @NoArgsConstructor
   @JsonIgnoreProperties(ignoreUnknown = true)
   @JsonInclude(Include.NON_DEFAULT)
-  public static final class CourseInListDto {
+  public static final class CourseVersionInListDto {
     @JsonProperty("_id")
     private String id;
 
@@ -43,9 +43,6 @@ public class GetCoursesDto {
 
     @JsonProperty("_version")
     private int version;
-
-    @JsonProperty("_latest_version")
-    private int latestVersion;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "EEE, dd MMM yyyy HH:mm:ss z")
     @JsonProperty("_updated")

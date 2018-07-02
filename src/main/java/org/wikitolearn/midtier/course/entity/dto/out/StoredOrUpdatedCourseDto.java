@@ -1,4 +1,4 @@
-package org.wikitolearn.midtier.course.entity.dto;
+package org.wikitolearn.midtier.course.entity.dto.out;
 
 import java.util.Date;
 
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
-public class UpdatedCourseDto {
+public class StoredOrUpdatedCourseDto {
   @JsonProperty("_id")
   private String id;
 

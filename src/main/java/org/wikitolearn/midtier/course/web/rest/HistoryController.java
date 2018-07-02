@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
@@ -17,6 +18,8 @@ import org.wikitolearn.midtier.course.entity.Chapter;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
 import org.wikitolearn.midtier.course.entity.Page;
+import org.wikitolearn.midtier.course.entity.dto.in.GetCourseDto;
+import org.wikitolearn.midtier.course.entity.dto.in.GetCourseVersionsDto;
 import org.wikitolearn.midtier.course.exception.ResourceNotFoundException;
 import org.wikitolearn.midtier.course.service.ChapterService;
 import org.wikitolearn.midtier.course.service.CourseService;
@@ -46,9 +49,12 @@ public class HistoryController {
   @Autowired
   private ObjectMapper objectMapper;
   
+  @Autowired
+  private ModelMapper modelMapper;
+  
   @ApiOperation(value = "getCourseVersion")
   @GetMapping(value = "/{courseId}/versions/{version}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public Course getCourseVersion(@PathVariable(value = "courseId", required = true) String courseId,
+  public GetCourseDto getCourseVersion(@PathVariable(value = "courseId", required = true) String courseId,
       @PathVariable(value = "version", required = true) Integer version) throws JsonProcessingException {
     MultiValueMap<String, String> courseParams = new LinkedMultiValueMap<>();
     courseParams.add("version", String.valueOf(version));
@@ -85,18 +91,18 @@ public class HistoryController {
           return chapter;
         })
         .collect(Collectors.toList()));
-    return course;
+    return modelMapper.map(course, GetCourseDto.class);
   }
   
   @GetMapping(value = "/{courseId}/versions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public EntityList<Course> getCourseVersions(@PathVariable(value = "courseId", required = true) String courseId,
+  public GetCourseVersionsDto getCourseVersions(@PathVariable(value = "courseId", required = true) String courseId,
       @RequestParam(value="page", required=false) Integer page) {
     MultiValueMap<String, String> courseParams = new LinkedMultiValueMap<>();
     courseParams.add("page", String.valueOf(page));
     courseParams.add("version", "all");
 
     EntityList<Course> courseVersions = courseService.getAllCourseVersions(courseId, courseParams);
-    return courseVersions;
+    return modelMapper.map(courseVersions, GetCourseVersionsDto.class);
   }
   
   @GetMapping(value = "/{courseId}/versions/{version}", params = "pageId", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

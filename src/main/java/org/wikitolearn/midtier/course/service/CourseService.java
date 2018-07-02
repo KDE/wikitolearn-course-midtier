@@ -106,7 +106,9 @@ public class CourseService {
         return c;
       });
     
-    return this.update(course);
+    Course updatedCourse = this.update(course);
+    updatedCourse.setChapters(course.getChapters());
+    return updatedCourse;
   }
 
   @EventListener

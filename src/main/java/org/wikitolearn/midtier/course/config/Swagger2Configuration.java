@@ -19,8 +19,9 @@ public class Swagger2Configuration {
 
   @Bean
   public Docket api() {
-    return new Docket(DocumentationType.SWAGGER_2).enableUrlTemplating(true).select().apis(RequestHandlerSelectors.basePackage("org.wikitolearn"))
-        .paths(PathSelectors.any()).build().apiInfo(apiInfo());
+    return new Docket(DocumentationType.SWAGGER_2).useDefaultResponseMessages(false).enableUrlTemplating(true).select()
+        .apis(RequestHandlerSelectors.basePackage("org.wikitolearn")).paths(PathSelectors.any()).build()
+        .apiInfo(apiInfo());
   }
 
   private ApiInfo apiInfo() {

@@ -1,4 +1,4 @@
-package org.wikitolearn.midtier.course.entity.dto;
+package org.wikitolearn.midtier.course.entity.dto.in;
 
 import java.util.List;
 

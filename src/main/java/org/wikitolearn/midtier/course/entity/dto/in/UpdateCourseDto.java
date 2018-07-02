@@ -1,4 +1,4 @@
-package org.wikitolearn.midtier.course.entity.dto;
+package org.wikitolearn.midtier.course.entity.dto.in;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
