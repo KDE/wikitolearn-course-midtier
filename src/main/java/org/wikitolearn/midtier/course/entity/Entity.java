@@ -8,8 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -57,9 +55,4 @@ public abstract class Entity {
     private List<String> authors;
     
     private String language;
-    
-    public String toJson() throws JsonProcessingException {
-      ObjectMapper mapper = new ObjectMapper(); 
-      return mapper.writeValueAsString(this);
-    }
 }

@@ -14,17 +14,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
-public class UpdateCourseClientDto {
+public class UpdateOrSaveChapterClientDto {
   private String title;
   private String language;
   
-  private List<ChapterInUpdateCourseChapter> chapters;
+  private List<PageInUpdateOrSaveChapter> pages;
   
   @Data
   @NoArgsConstructor
   @JsonIgnoreProperties(ignoreUnknown = true)
   @JsonInclude(Include.NON_DEFAULT)
-  public static final class ChapterInUpdateCourseChapter {
+  public static final class PageInUpdateOrSaveChapter {
     @JsonProperty("_id")
     private String id;
 
