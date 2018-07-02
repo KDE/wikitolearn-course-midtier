@@ -22,7 +22,6 @@ The API documentation is generated thanks to [Springfox](https://springfox.githu
 A Swagger2 compliant JSON and Swagger UI is available at `/api-docs` and at `/swagger-ui.html` respectively.
 
 > N.B.: Do not use the "Try it out" Swagger UI option, it will be removed as soon as possible.
-> Moreover, model definition for requests do not match the expected ones yet.
 
 ## Versioning
 We use [SemVer](http://semver.org/) for versioning.
