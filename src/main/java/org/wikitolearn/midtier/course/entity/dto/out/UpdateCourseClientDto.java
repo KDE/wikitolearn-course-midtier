@@ -1,9 +1,6 @@
-package org.wikitolearn.midtier.course.entity.dto.in;
+package org.wikitolearn.midtier.course.entity.dto.out;
 
 import java.util.List;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,26 +14,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
-public class UpdateCourseChaptersDto {
-  @NotNull
+public class UpdateCourseClientDto {
   private String title;
-  @NotNull
   private String language;
-  @NotNull
-  @NotEmpty
-  private List<ChapterInUpdateCourseChapters> chapters;
+  
+  private List<ChapterInUpdateCourseChapter> chapters;
   
   @Data
   @NoArgsConstructor
   @JsonIgnoreProperties(ignoreUnknown = true)
   @JsonInclude(Include.NON_DEFAULT)
-  public static final class ChapterInUpdateCourseChapters {
+  public static final class ChapterInUpdateCourseChapter {
     @JsonProperty("_id")
-    @NotNull
     private String id;
 
     @JsonProperty("_version")
-    @NotNull
     private int version;
   }
 }

@@ -26,6 +26,8 @@ import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.exception.InvalidResourceUpdateException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,6 +42,9 @@ public class ChapterService {
   
   @Autowired
   private PageService pageService;
+  
+  @Autowired
+  private ObjectMapper objectMapper;
 
   public EntityList<Chapter> findAll() {
     return chapterClient.findAll();
@@ -83,9 +88,11 @@ public class ChapterService {
   
   public Chapter delete(Chapter chapter, boolean isBulkDelete) throws JsonProcessingException {
     MultiValueMap<String, String> chapterParams = new LinkedMultiValueMap<>();
-    chapterParams.add("projection", "{\"title\":1, \"pages\":1}");
+    ObjectNode projectionJsonObject = objectMapper.getNodeFactory().objectNode().put("title", 1).put("pages", 1);
+    chapterParams.add("projection", objectMapper.writeValueAsString(projectionJsonObject));
+    
     chapter = this.find(chapter.getId(), chapterParams);
-    log.info(chapter.toString());
+    
     Optional
     .ofNullable(chapter.getPages())
     .orElseGet(Collections::emptyList)

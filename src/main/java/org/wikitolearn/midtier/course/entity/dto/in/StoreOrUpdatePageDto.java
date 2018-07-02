@@ -13,9 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
-public class UpdateCourseDto {
+public class StoreOrUpdatePageDto {
   @NotNull
   private String title;
   @NotNull
   private String language;
+  @NotNull
+  private String content;
 }
