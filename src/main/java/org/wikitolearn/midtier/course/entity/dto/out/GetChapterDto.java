@@ -1,4 +1,4 @@
-package org.wikitolearn.midtier.course.entity.dto.in;
+package org.wikitolearn.midtier.course.entity.dto.out;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
-public class GetCourseDto {
+public class GetChapterDto {
   @JsonProperty("_id")
   private String id;
 
@@ -43,35 +43,22 @@ public class GetCourseDto {
 
   private String language;
 
-  private List<ChapterInCourse> chapters;
+  private List<PageInChapter> pages;
 
   @Data
   @NoArgsConstructor
   @JsonIgnoreProperties(ignoreUnknown = true)
   @JsonInclude(Include.NON_DEFAULT)
-  public static final class ChapterInCourse {
+  public static final class PageInChapter {
     @JsonProperty("_id")
     private String id;
+    
+    @JsonProperty("_etag")
+    private String etag;
 
     @JsonProperty("_version")
     private int version;
 
     private String title;
-
-    private List<PageInChapter> pages;
-
-    @Data
-    @NoArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonInclude(Include.NON_DEFAULT)
-    public static final class PageInChapter {
-      @JsonProperty("_id")
-      private String id;
-
-      @JsonProperty("_version")
-      private int version;
-
-      private String title;
-    }
   }
 }
