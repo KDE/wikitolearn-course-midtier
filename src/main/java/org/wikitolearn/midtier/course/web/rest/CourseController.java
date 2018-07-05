@@ -27,12 +27,12 @@ import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
 import org.wikitolearn.midtier.course.entity.ErrorJson;
 import org.wikitolearn.midtier.course.entity.dto.in.AddCourseChaptersDto;
-import org.wikitolearn.midtier.course.entity.dto.in.GetCourseDto;
-import org.wikitolearn.midtier.course.entity.dto.in.GetCoursesDto;
 import org.wikitolearn.midtier.course.entity.dto.in.StoreCourseDto;
 import org.wikitolearn.midtier.course.entity.dto.in.UpdateCourseChaptersDto;
 import org.wikitolearn.midtier.course.entity.dto.in.UpdateCourseDto;
 import org.wikitolearn.midtier.course.entity.dto.out.AddedCourseChaptersDto;
+import org.wikitolearn.midtier.course.entity.dto.out.GetCourseDto;
+import org.wikitolearn.midtier.course.entity.dto.out.GetCoursesDto;
 import org.wikitolearn.midtier.course.entity.dto.out.StoredOrUpdatedCourseDto;
 import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.service.ChapterService;
@@ -68,7 +68,8 @@ public class CourseController {
   private ObjectMapper objectMapper;
   
   @ApiResponses({
-    @ApiResponse(code = 200, message = "Success", response = GetCoursesDto.class)
+    @ApiResponse(code = 200, message = "Success", response = GetCoursesDto.class),
+    @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class)
   })
   @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public GetCoursesDto getCourses(@RequestParam(value="page", required=false) Integer page) {
@@ -81,7 +82,8 @@ public class CourseController {
   }
   
   @ApiResponses({
-    @ApiResponse(code = 200, message = "Success", response = GetCourseDto.class)
+    @ApiResponse(code = 200, message = "Success", response = GetCourseDto.class),
+    @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class)
   })
   @GetMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public GetCourseDto getCourse(@PathVariable String courseId) throws JsonProcessingException {

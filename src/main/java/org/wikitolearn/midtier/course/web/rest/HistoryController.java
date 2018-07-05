@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wikitolearn.midtier.course.entity.Chapter;
 import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
+import org.wikitolearn.midtier.course.entity.ErrorJson;
 import org.wikitolearn.midtier.course.entity.Page;
-import org.wikitolearn.midtier.course.entity.dto.in.GetCourseDto;
-import org.wikitolearn.midtier.course.entity.dto.in.GetCourseVersionsDto;
+import org.wikitolearn.midtier.course.entity.dto.out.GetCourseDto;
+import org.wikitolearn.midtier.course.entity.dto.out.GetCourseVersionsDto;
 import org.wikitolearn.midtier.course.exception.ResourceNotFoundException;
 import org.wikitolearn.midtier.course.service.ChapterService;
 import org.wikitolearn.midtier.course.service.CourseService;
@@ -30,6 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -53,6 +56,10 @@ public class HistoryController {
   private ModelMapper modelMapper;
   
   @ApiOperation(value = "getCourseVersion")
+  @ApiResponses({
+    @ApiResponse(code = 200, message = "Success", response = GetCourseDto.class),
+    @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class)
+  })
   @GetMapping(value = "/{courseId}/versions/{version}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public GetCourseDto getCourseVersion(@PathVariable(value = "courseId", required = true) String courseId,
       @PathVariable(value = "version", required = true) Integer version) throws JsonProcessingException {
@@ -94,6 +101,10 @@ public class HistoryController {
     return modelMapper.map(course, GetCourseDto.class);
   }
   
+  @ApiResponses({
+    @ApiResponse(code = 200, message = "Success", response = GetCourseVersionsDto.class),
+    @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class)
+  })
   @GetMapping(value = "/{courseId}/versions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public GetCourseVersionsDto getCourseVersions(@PathVariable(value = "courseId", required = true) String courseId,
       @RequestParam(value="page", required=false) Integer page) {
@@ -105,6 +116,10 @@ public class HistoryController {
     return modelMapper.map(courseVersions, GetCourseVersionsDto.class);
   }
   
+  @ApiResponses({
+    @ApiResponse(code = 200, message = "Success", response = Page.class),
+    @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class)
+  })
   @GetMapping(value = "/{courseId}/versions/{version}", params = "pageId", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Page getPage(@PathVariable(value = "courseId", required = true) String courseId,
       @PathVariable(value = "version", required = true) Integer version,

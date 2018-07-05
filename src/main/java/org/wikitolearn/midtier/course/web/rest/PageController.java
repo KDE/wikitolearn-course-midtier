@@ -38,6 +38,7 @@ public class PageController {
   
   @ApiResponses({
     @ApiResponse(code = 200, message = "Success"),
+    @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class)
   })
   @GetMapping(value = "/{pageId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public Page getPage(@PathVariable String pageId) {
