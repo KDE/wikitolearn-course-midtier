@@ -4,11 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.wikitolearn.midtier.course.client.PageClient;
+import org.wikitolearn.midtier.course.entity.Chapter;
 import org.wikitolearn.midtier.course.entity.EntityList;
 import org.wikitolearn.midtier.course.entity.Page;
+import org.wikitolearn.midtier.course.event.ChapterDeleted;
 import org.wikitolearn.midtier.course.event.PageDeleted;
 import org.wikitolearn.midtier.course.event.PageUpdated;
 
@@ -57,11 +60,16 @@ public class PageService {
     return updatedPage;
   }
   
-  public Page delete(Page page, boolean isBulkDelete) throws JsonProcessingException {
-    Page deletedPage = pageClient.delete(page);
-    if(!isBulkDelete) {
-      applicationEventPublisher.publishEvent(new PageDeleted(this, page));
-    }
-    return deletedPage;
+  public void delete(Page page, boolean isBulkDelete) {
+    // FIXME: workaround, see T9150
+    page = pageClient.find(page.getId(), null);
+    pageClient.delete(page);
+    applicationEventPublisher.publishEvent(new PageDeleted(this, page, isBulkDelete));
+  }
+  
+  @EventListener
+  public void handleChapterDeletedEvent(ChapterDeleted event) throws JsonProcessingException {
+    Chapter deletedChapter = event.getChapter();
+    deletedChapter.getPages().parallelStream().forEach(p -> this.delete(p, true));
   }
 }

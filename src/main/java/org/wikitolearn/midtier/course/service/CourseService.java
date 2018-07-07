@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -16,6 +17,7 @@ import org.wikitolearn.midtier.course.entity.Course;
 import org.wikitolearn.midtier.course.entity.EntityList;
 import org.wikitolearn.midtier.course.event.ChapterDeleted;
 import org.wikitolearn.midtier.course.event.ChapterUpdated;
+import org.wikitolearn.midtier.course.event.CourseDeleted;
 import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.exception.InvalidResourceUpdateException;
 
@@ -31,6 +33,8 @@ public class CourseService {
   private CourseClient courseClient;
   @Autowired
   private ChapterService chapterService;
+  @Autowired
+  private ApplicationEventPublisher applicationEventPublisher;
 
   public EntityList<Course> findAll(MultiValueMap<String, String> params) {
     return courseClient.findAll(params);
@@ -56,25 +60,17 @@ public class CourseService {
     return courseClient.save(course);
   }
 
-  public Course update(Course course) throws JsonProcessingException {
+  public Course update(Course course) {
     return courseClient.update(course);
   }
 
-  public Course delete(Course course) throws JsonProcessingException {
+  public void delete(Course course) {
     course = this.find(course.getId(), null);
-    course.getChapters().stream().forEachOrdered(c -> {
-      try {
-        this.chapterService.delete(c, true);
-      } catch (JsonProcessingException e) {
-        // FIXME
-        log.error(e.getMessage());
-      }
-    });
-
-    return courseClient.delete(course);
+    courseClient.delete(course);
+    applicationEventPublisher.publishEvent(new CourseDeleted(this, course));
   }
 
-  public Course updateChapters(Course course) throws JsonProcessingException, InvalidResourceCreateException {
+  public Course updateChapters(Course course) throws InvalidResourceCreateException {
     List<Chapter> currentChapters = this.find(course.getId(), null).getChapters();
 
     if(currentChapters.size() == course.getChapters().size() && currentChapters.containsAll(course.getChapters())) {
@@ -127,17 +123,20 @@ public class CourseService {
 
   @EventListener
   public void handleChapterDeletedEvent(ChapterDeleted event) throws JsonProcessingException {
-    Chapter deletedChapter = event.getChapter();
-    Course course = this.findByChapterId(deletedChapter.getId());
+    
+    if(!event.isBulkDelete()) {
+      Chapter deletedChapter = event.getChapter();
+      Course course = this.findByChapterId(deletedChapter.getId());
 
-    List<Chapter> chapters = course.getChapters()
-        .stream()
-        .sequential()
-        .filter(removeDeletedChapter(deletedChapter.getId()))
-        .collect(Collectors.<Chapter>toList());
-    course.setChapters(chapters);
+      List<Chapter> chapters = course.getChapters()
+          .stream()
+          .sequential()
+          .filter(removeDeletedChapter(deletedChapter.getId()))
+          .collect(Collectors.<Chapter>toList());
+      course.setChapters(chapters);
 
-    this.update(course);
+      this.update(course); 
+    }
   }
 
   private static Predicate<Chapter> removeDeletedChapter(String deletedChapterId) {

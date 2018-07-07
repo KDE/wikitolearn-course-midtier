@@ -67,7 +67,7 @@ public class PageController {
     @ApiResponse(code = 403, message = "Forbidden"),
     @ApiResponse(code = 500, message = "Internal Server Error", response = ErrorJson.class)
   })
-  @DeleteMapping(value = "/{pageId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @DeleteMapping(value = "/{pageId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable("pageId") String pageId, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
     Page page = new Page();

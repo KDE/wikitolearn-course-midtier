@@ -141,7 +141,7 @@ public class ChapterController {
     @ApiResponse(code = 403, message = "Forbidden"),
     @ApiResponse(code = 500, message = "Internal Server Error", response = ErrorJson.class)
   })
-  @DeleteMapping(value = "/{chapterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @DeleteMapping(value = "/{chapterId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable("chapterId") String chapterId, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
     Chapter chapter = new Chapter();

@@ -153,7 +153,7 @@ public class CourseController {
     @ApiResponse(code = 403, message = "Forbidden"),
     @ApiResponse(code = 500, message = "Internal Server Error", response = ErrorJson.class)
   })
-  @DeleteMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @DeleteMapping(value = "/{courseId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteCourse(@PathVariable("courseId") String courseId, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
     Course course = new Course();

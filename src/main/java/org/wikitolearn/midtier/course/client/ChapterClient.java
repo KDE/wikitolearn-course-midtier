@@ -15,6 +15,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.wikitolearn.midtier.course.entity.Chapter;
@@ -72,7 +73,7 @@ public class ChapterClient {
     }).getBody();
   }
 
-  public Chapter store(Chapter chapter) throws JsonProcessingException {
+  public Chapter store(Chapter chapter) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/chapters").build().encode().toUri();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -81,7 +82,7 @@ public class ChapterClient {
     return client.postForObject(uri, httpEntity, Chapter.class);
   }
 
-  public Chapter update(Chapter chapter) throws JsonProcessingException {
+  public Chapter update(Chapter chapter) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/chapters/" + chapter.getId()).build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
@@ -93,15 +94,14 @@ public class ChapterClient {
     return client.patchForObject(uri, httpEntity, Chapter.class);
   }
 
-  public Chapter delete(Chapter chapter) throws JsonProcessingException {
+  public void delete(Chapter chapter) throws RestClientException {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/chapters/" + chapter.getId()).build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setIfMatch(chapter.getEtag());
 
     HttpEntity<String> httpEntity = new HttpEntity<String>(headers);
-    return client.exchange(uri, HttpMethod.DELETE, httpEntity, Chapter.class).getBody();
+    client.exchange(uri, HttpMethod.DELETE, httpEntity, Chapter.class); 
   }
 
   private String defaultChapters() {

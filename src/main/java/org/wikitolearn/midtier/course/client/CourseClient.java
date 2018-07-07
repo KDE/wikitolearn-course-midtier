@@ -81,7 +81,7 @@ public class CourseClient {
     }).getBody();
   }
 
-  public Course save(Course course) throws JsonProcessingException {
+  public Course save(Course course) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses").build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
@@ -92,7 +92,7 @@ public class CourseClient {
     return client.postForObject(uri, httpEntity, Course.class);
   }
 
-  public Course update(Course course) throws JsonProcessingException {
+  public Course update(Course course) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses/" + course.getId()).build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
@@ -104,15 +104,14 @@ public class CourseClient {
     return client.patchForObject(uri, httpEntity, Course.class);
   }
 
-  public Course delete(Course course) throws JsonProcessingException {
+  public void delete(Course course) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/courses/" + course.getId()).build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setIfMatch(course.getEtag());
 
     HttpEntity<String> httpEntity = new HttpEntity<String>(headers);
-    return client.exchange(uri, HttpMethod.DELETE, httpEntity, Course.class).getBody();
+    client.exchange(uri, HttpMethod.DELETE, httpEntity, Course.class);
   }
 
   private String defaultCourses() {

@@ -57,7 +57,7 @@ public class PageClient {
     return client.getForObject(uri, Page.class);
   }
 
-  public Page store(Page page) throws JsonProcessingException {
+  public Page store(Page page) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/pages").build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
@@ -68,7 +68,7 @@ public class PageClient {
     return client.postForObject(uri, httpEntity, Page.class);
   }
 
-  public Page update(Page page) throws JsonProcessingException {
+  public Page update(Page page) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/pages/" + page.getId()).build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
@@ -80,15 +80,14 @@ public class PageClient {
     return client.patchForObject(uri, httpEntity, Page.class);
   }
 
-  public Page delete(Page page) throws JsonProcessingException {
+  public void delete(Page page) {
     URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/pages/" + page.getId()).build().encode().toUri();
 
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setIfMatch(page.getEtag());
 
     HttpEntity<String> httpEntity = new HttpEntity<String>(headers);
-    return client.exchange(uri, HttpMethod.DELETE, httpEntity, Page.class).getBody();
+    client.exchange(uri, HttpMethod.DELETE, httpEntity, Page.class);
   }
 
   private String defaultPages() {
