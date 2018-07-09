@@ -1,6 +1,8 @@
 package org.wikitolearn.midtier.course.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -59,17 +61,21 @@ public class PageService {
     applicationEventPublisher.publishEvent(new PageUpdated(this, updatedPage));
     return updatedPage;
   }
-  
+
   public void delete(Page page, boolean isBulkDelete) {
     // FIXME: workaround, see T9150
     page = pageClient.find(page.getId(), null);
     pageClient.delete(page);
     applicationEventPublisher.publishEvent(new PageDeleted(this, page, isBulkDelete));
   }
-  
+
   @EventListener
   public void handleChapterDeletedEvent(ChapterDeleted event) throws JsonProcessingException {
     Chapter deletedChapter = event.getChapter();
-    deletedChapter.getPages().parallelStream().forEach(p -> this.delete(p, true));
+    Optional
+      .ofNullable(deletedChapter.getPages())
+      .orElseGet(Collections::emptyList)
+      .parallelStream()
+      .forEach(p -> this.delete(p, true));
   }
 }
