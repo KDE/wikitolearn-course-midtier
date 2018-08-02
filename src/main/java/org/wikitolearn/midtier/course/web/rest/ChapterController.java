@@ -91,7 +91,7 @@ public class ChapterController {
     @ApiResponse(code = 500, message = "Internal Server Error", response = ErrorJson.class)
   })
   @PatchMapping(value = "/{chapterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public UpdatedChapter update(@PathVariable("chapterId") String chapterId, @Valid @RequestBody UpdateChapterDto chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
+  public UpdatedChapterDto update(@PathVariable("chapterId") String chapterId, @Valid @RequestBody UpdateChapterDto chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException {
     Chapter chapterToUpdate = modelMapper.map(chapter, Chapter.class);
     chapterToUpdate.setId(chapterId);
     chapterToUpdate.setEtag(etag);
@@ -109,7 +109,7 @@ public class ChapterController {
     @ApiResponse(code = 500, message = "Internal Server Error", response = ErrorJson.class)
   })
   @PatchMapping(value = "/{chapterId}/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public UpdatedChapter updatePages(@PathVariable("chapterId") String chapterId, @Valid @RequestBody UpdateChapterPagesDto chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+  public UpdatedChapterDto updatePages(@PathVariable("chapterId") String chapterId, @Valid @RequestBody UpdateChapterPagesDto chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
     Chapter chapterToUpdate = modelMapper.map(chapter, Chapter.class);
     chapterToUpdate.setId(chapterId);
     chapterToUpdate.setEtag(etag);
