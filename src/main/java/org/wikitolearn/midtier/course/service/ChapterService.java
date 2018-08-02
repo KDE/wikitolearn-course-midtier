@@ -133,7 +133,7 @@ public class ChapterService {
         return p;
       });
 
-    Chapter addedChapter = this.update(chapter);
+    Chapter updatedChapter = this.update(chapter);
     updatedChapter.setPages(chapter.getPages());
     return updatedChapter;
   }
