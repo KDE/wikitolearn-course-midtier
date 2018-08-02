@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
 public class AddedChapterPagesDto {
-  
+
   @JsonProperty("_id")
   private String id;
 
@@ -37,9 +37,9 @@ public class AddedChapterPagesDto {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "EEE, dd MMM yyyy HH:mm:ss z")
   @JsonProperty("_created")
   private Date created;
-  
+
   private List<PageInAddedChapterPages> pages;
-  
+
   @Data
   @NoArgsConstructor
   @JsonIgnoreProperties(ignoreUnknown = true)
@@ -47,6 +47,9 @@ public class AddedChapterPagesDto {
   public static final class PageInAddedChapterPages {
     @JsonProperty("_id")
     private String id;
+
+    @JsonProperty("_etag")
+    private String etag;
 
     @JsonProperty("_version")
     private int version;

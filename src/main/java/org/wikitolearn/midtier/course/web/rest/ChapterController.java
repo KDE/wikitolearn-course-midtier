@@ -29,7 +29,7 @@ import org.wikitolearn.midtier.course.entity.dto.in.UpdateChapterDto;
 import org.wikitolearn.midtier.course.entity.dto.in.UpdateChapterPagesDto;
 import org.wikitolearn.midtier.course.entity.dto.out.AddedChapterPagesDto;
 import org.wikitolearn.midtier.course.entity.dto.out.GetChapterDto;
-import org.wikitolearn.midtier.course.entity.dto.out.UpdatedChapter;
+import org.wikitolearn.midtier.course.entity.dto.out.UpdatedChapterDto;
 import org.wikitolearn.midtier.course.exception.InvalidResourceCreateException;
 import org.wikitolearn.midtier.course.service.ChapterService;
 import org.wikitolearn.midtier.course.service.PageService;
@@ -46,19 +46,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping(value =  "/chapters")
 public class ChapterController {
-  
+
   @Autowired
   private ChapterService chapterService;
-  
+
   @Autowired
   private PageService pageService;
-  
+
   @Autowired
   private ModelMapper modelMapper;
-  
+
   @Autowired
   private ObjectMapper objectMapper;
-  
+
   @ApiResponses({
     @ApiResponse(code = 200, message = "Success", response = GetChapterDto.class),
     @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class)
@@ -69,7 +69,7 @@ public class ChapterController {
     MultiValueMap<String, String> pagesParams = new LinkedMultiValueMap<>();
     ObjectNode projectionJsonObject = objectMapper.getNodeFactory().objectNode().put("title", 1);
     pagesParams.add("projection", objectMapper.writeValueAsString(projectionJsonObject));
-    
+
     Chapter chapter = chapterService.find(chapterId, null);
     chapter.setPages(
         Optional
@@ -81,9 +81,9 @@ public class ChapterController {
     );
     return modelMapper.map(chapter, GetChapterDto.class);
   }
-  
+
   @ApiResponses({
-    @ApiResponse(code = 200, message = "Success", response = UpdatedChapter.class),
+    @ApiResponse(code = 200, message = "Success", response = UpdatedChapterDto.class),
     @ApiResponse(code = 401, message = "Unauthorized"),
     @ApiResponse(code = 403, message = "Forbidden"),
     @ApiResponse(code = 404, message = "Not Found", response = ErrorJson.class),
@@ -95,29 +95,29 @@ public class ChapterController {
     Chapter chapterToUpdate = modelMapper.map(chapter, Chapter.class);
     chapterToUpdate.setId(chapterId);
     chapterToUpdate.setEtag(etag);
-    
+
     Chapter updatedChapter = chapterService.update(chapterToUpdate);
-    
-    return modelMapper.map(updatedChapter, UpdatedChapter.class);
+
+    return modelMapper.map(updatedChapter, UpdatedChapterDto.class);
   }
-  
+
   @ApiResponses({
-    @ApiResponse(code = 200, message = "Success", response = UpdateChapterPagesDto.class),
+    @ApiResponse(code = 200, message = "Success", response = UpdatedChapterDto.class),
     @ApiResponse(code = 401, message = "Unauthorized"),
     @ApiResponse(code = 403, message = "Forbidden"),
     @ApiResponse(code = 422, message = "Uprocessable Entity"),
     @ApiResponse(code = 500, message = "Internal Server Error", response = ErrorJson.class)
   })
   @PatchMapping(value = "/{chapterId}/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public UpdateChapterPagesDto updatePages(@PathVariable("chapterId") String chapterId, @Valid @RequestBody UpdateChapterPagesDto chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
+  public UpdatedChapter updatePages(@PathVariable("chapterId") String chapterId, @Valid @RequestBody UpdateChapterPagesDto chapter, @RequestHeader("If-Match") String etag) throws JsonProcessingException, InvalidResourceCreateException {
     Chapter chapterToUpdate = modelMapper.map(chapter, Chapter.class);
     chapterToUpdate.setId(chapterId);
     chapterToUpdate.setEtag(etag);
-    
+
     Chapter updatedChapter = chapterService.updatePages(chapterToUpdate);
-    return modelMapper.map(updatedChapter, UpdateChapterPagesDto.class);
+    return modelMapper.map(updatedChapter, UpdatedChapterDto.class);
   }
-  
+
   @ApiResponses({
     @ApiResponse(code = 200, message = "Success", response = AddedChapterPagesDto.class),
     @ApiResponse(code = 401, message = "Unauthorized"),
@@ -134,7 +134,7 @@ public class ChapterController {
     Chapter updatedChapter = chapterService.addPages(chapterToUpdate);
     return modelMapper.map(updatedChapter, AddedChapterPagesDto.class);
   }
-  
+
   @ApiResponses({
     @ApiResponse(code = 204, message = "No Content"),
     @ApiResponse(code = 401, message = "Unauthorized"),

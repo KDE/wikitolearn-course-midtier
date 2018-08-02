@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_DEFAULT)
-public class UpdatedChapter {
+public class UpdatedChapterDto {
   @JsonProperty("_id")
   private String id;
 
